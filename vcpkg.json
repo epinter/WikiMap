@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "wiki-map",
+  "version-string": "1.0.0",
+  "description": "Wiki & Map Integration",
+  "homepage": "https://github.com/epinter/wikimap",
+  "license": "LGPL-3.0-or-later",
+  "features": {
+    "plugin": {
+      "description": "SKSE plugin",
+      "dependencies": [
+        "commonlibsse-ng",
+        "spdlog",
+        "simpleini",
+        "boost-url",
+        "boost-algorithm"
+      ]
+    }
+  },
+  "default-features": [
+    "plugin"
+  ],
+  "builtin-baseline": "a4275b7eee79fb24ec2e135481ef5fce8b41c339"
+}

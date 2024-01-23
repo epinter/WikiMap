@@ -1,0 +1,47 @@
+{
+	"$schema": "https://raw.githubusercontent.com/Exit-9B/MCM-Helper/main/docs/config.schema.json",
+	"modName": "WikiMapIntegration",
+	"displayName": "Wiki & Map",
+	"minMcmVersion": 13,
+	"cursorFillMode": "topToBottom",
+	"content": [
+		{
+			"id": "bEnableSteam:General",
+			"text": "$EnableSteam",
+			"type": "toggle",
+			"help": "$EnableSteamHelp",
+			"valueOptions": {
+				"sourceType": "ModSettingBool"
+			}
+		},
+		{
+			"id": "bUseSteamModal:General",
+			"text": "$UseSteamModal",
+			"type": "toggle",
+			"help": "$UseSteamModalHelp",
+			"valueOptions": {
+				"sourceType": "ModSettingBool"
+			}
+		},
+		{
+			"id": "iKeyCode:General",
+			"text": "$Key",
+			"type": "keymap",
+			"ignoreConflicts": true,
+			"valueOptions": {
+				"sourceType": "ModSettingInt"
+			},
+			"help": "$KeyCodeHelp"
+		},
+				{
+			"id": "iModifierKeyCode:General",
+			"text": "$Modifier",
+			"type": "keymap",
+			"ignoreConflicts": true,
+			"valueOptions": {
+				"sourceType": "ModSettingInt"
+			},
+			"help": "$ModifierHelp"
+		}
+	]
+}
