@@ -4,7 +4,7 @@
 [![Downloads](https://img.shields.io/github/downloads/epinter/wikimap/total.svg)](https://github.com/epinter/wikimap/releases/latest)
 [![Release Date](https://img.shields.io/github/release-date/epinter/wikimap.svg)](https://github.com/epinter/wikimap/releases/latest)
 [![License](https://img.shields.io/github/license/epinter/wikimap.svg)](https://github.com/epinter/wikimap/blob/main/LICENSE)
-[![Site](https://img.shields.io/static/v1?label=site&message=NexusMods&color=blue)](https://www.nexusmods.com/skyrimspecialedition/mods/121342)
+[![Site](https://img.shields.io/static/v1?label=site&message=NexusMods&color=blue)](https://www.nexusmods.com/skyrimspecialedition/mods/126202)
 
 A shortcut to online map and information about quests and locations, with support for Steam overlay.
 
@@ -22,8 +22,16 @@ A shortcut to online map and information about quests and locations, with suppor
 - [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/community/)
 - [CommonLibSSE-NG](https://github.com/CharmedBaryon/CommonLibSSE-NG)
 
+## **Information you can access**
+
+- Online map for the current location if not selecting any marker.
+- Wiki page of a Map location, position the mouse cursor over the map marker and press the configured shortcut.
+- Wiki page for a Quest marker under the mouse cursor in the map menu. The name of the quest will be used in the url to access the wiki, not the objective.
+- Wiki page for a Quest highlighted in the quests menu.
+
 ## **How to use**
 
+The default key is "/" (key code 53), configurable in MCM.
 This mod works when Map or Quests menus are open, nothing happens outside these menus.
 To view information about a quest, highlight the quest using mouse and press the configured key. Steam overlay or default browser should open.
 For the map, position the cursor over a map marker and press the shortcut. If you press the key when the cursor is not over a map marker, the online map will open displaying your current position.
