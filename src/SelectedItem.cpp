@@ -71,6 +71,6 @@ namespace wmh {
 
     void SelectedItem::reset() {
         setMapNone();
-        setQuest("", 0);
+        setQuestNone();
     }
 }  // namespace wmh

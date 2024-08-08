@@ -17,103 +17,68 @@ namespace wmh {
                     RE::make_gptr<MapMenuHook::MapSetSelectedMarker>(setSelectedMarkerOrig);
                 movieView->CreateFunction(&setSelectedMarkerNew, funcSetSelectedMarker.get());
                 mapMenu.SetMember("SetSelectedMarker", setSelectedMarkerNew);
+            } else {
+                logger::error("SetSelectedMarker not found");
             }
+        } else {
+            logger::error("_global.Map.MapMenu.prototype not found");
         }
     }
 
     void MapMenuHook::MapSetSelectedMarker::Call([[maybe_unused]] Params& params) {
         if (origFunction.IsObject()) {
-            logger::trace("calling MapSetSelectedMarker::origFunction function");
             origFunction.Invoke("call", params.retVal, params.argsWithThisRef, params.argCount + 1);
         }
 
+        if (params.argCount == 0 || !params.args[0].IsNumber()) {
+            return;
+        }
+
+        int markerIdx = static_cast<int>(params.args[0].GetNumber());
         bool unsetMarker = false;
-        if (params.argCount == 0 || !params.args[0].IsNumber() || params.args[0].GetNumber() < 0) {
+        if (markerIdx < 0) {
             unsetMarker = true;
         }
 
-        int localMap = -1;
-        RE::GFxValue localMapMenu{};
-        params.thisPtr->GetMember("LocalMapMenu", &localMapMenu);
-        if (localMapMenu.IsObject()) {
-            RE::GFxValue localMapState{};
-            localMapMenu.GetMember("_state", &localMapState);  //0 = hidden, 1 = localMap, 2=locationFinder
-            if (localMapState.IsNumber()) {
-                localMap = static_cast<int>(localMapState.GetNumber());
-            } else {
-                logger::error("LocalMap._state not found");
-            }
-            if (isLocalMapOpen && localMap == 1) {
-                //stop if local map is open and current is world map
-                return;
-            } else if (localMap == 0) {
-                isLocalMapOpen = false;
-            }
-        } else if (params.thisPtr->HasMember("LocalMapMenu")) {
-            //LocalMapMenu member has no value when local map is open
-            localMap = 1;
-            isLocalMapOpen = true;
+        RE::GPtr<RE::MapMenu> uiMapMenu = RE::UI::GetSingleton()->GetMenu<RE::MapMenu>(RE::MapMenu::MENU_NAME);
+        bool localMap = uiMapMenu->localMapMenu.GetRuntimeData().showingMap;
+
+        if (localMap && markerIdx != uiMapMenu->localMapMenu.GetRuntimeData().selectedMarker &&
+            markerIdx == uiMapMenu->GetRuntimeData2().selectedMarker) {
+            //local map is open and the called SetSelectedMarker received another idx, so it is the worldmap
+            return;
         }
 
-        if (unsetMarker && localMap != 1) {
-            //reset SelectedItem when we are in MapMenu and LocalMap is not open
-            logger::trace("resetting SelectedItem: unsetMarker:'{}'; localMap:'{}'", unsetMarker, localMap);
+        if (unsetMarker) {
             SelectedItem::getInstance().setMapNone();
-        }
+        } else {
+            RE::BSTArray<RE::MapMenuMarker> markers = localMap ? uiMapMenu->localMapMenu.mapMarkers : uiMapMenu->mapMarkers;
+            if (markers.size() > 0 && markerIdx >= 0 && markerIdx < static_cast<int>(markers.size())) {
+                std::string markerName{};
+                RE::TESFullName* fn = markers[markerIdx].fullName;
+                const char* cm = markers[markerIdx].customMarker;
 
-        if (!unsetMarker) {
-            int markerIdx = static_cast<int>(params.args[0].GetNumber());
-            RE::GFxValue markerList{};
-            params.thisPtr->GetMember("_markerList", &markerList);
-            if (!markerList.IsArray()) {
-                logger::trace("markerList not found, idx:{};", markerIdx);
-                return;
-            }
+                if (fn && fn->GetFullName() && !std::string{fn->GetFullName()}.contains("<")) {
+                    markerName = fn->GetFullName();
+                } else if (cm && strlen(cm) > 0) {
+                    markerName = cm;
+                }
 
-            RE::GFxValue marker{};
-            markerList.GetElement(markerIdx, &marker);
-            if (!marker.IsObject()) {
-                logger::trace("marker not found: idx:{};", markerIdx);
-                return;
-            }
+                if (markers[markerIdx].type == 3 || markers[markerIdx].type == 2) {
+                    //2 = Custom Destination, 3 = Current Location
+                    SelectedItem::getInstance().reset();
+                    return;
+                }
 
-            RE::GFxValue markerName{};
-            marker.GetMember("label", &markerName);
+                logger::trace("markerIdx:{}; markerName:{}; type:{};", markerIdx, markerName, markers[markerIdx].type);
+                SelectedItem::getInstance().setMap(markerName, markerIdx, markers[markerIdx].type);
 
-            RE::GFxValue createIconType{};
-            params.movie->GetVariable(&createIconType, "_global.Map.MapMenu.CREATE_ICONTYPE");
-            if (!createIconType.IsNumber()) {
-                logger::error("CREATE_ICONTYPE not found");
-                return;
-            }
-
-            RE::GFxValue markerType{};
-            marker.GetMember("markerType", &markerType);
-            if (!markerType.IsNumber()) {
-                logger::error("markerType not found");
-                return;
-            }
-
-            if (markerType.GetNumber() > 64 && markerType.GetNumber() <= 67) {
-                logger::trace("marker type = {}, ignoring", markerType.GetNumber());
-                SelectedItem::getInstance().setMapNone();
-                return;
-            }
-
-            logger::trace("markerIdx:{}; markerName:{}", markerIdx, markerName.GetString());
-            SelectedItem::getInstance().setMap(std::string{markerName.GetString()}, markerIdx, static_cast<int>(markerType.GetNumber()));
-
-            if (localMap == 0 || localMap == 1) {
-                RE::GPtr<RE::MapMenu> uiMapMenu = RE::UI::GetSingleton()->GetMenu<RE::MapMenu>(RE::MapMenu::MENU_NAME);
-                RE::BSTArray<RE::MapMenuMarker> markers = localMap == 0 ? uiMapMenu->mapMarkers : uiMapMenu->localMapMenu.mapMarkers;
-
-                if (markers.size() > 0 && markerIdx >= 0 && markerIdx < static_cast<int>(markers.size())) {
-                    RE::TESForm* questForm = markers[markerIdx].form;
-                    RE::TESFullName* fn = markers[markerIdx].fullName;
-                    if (questForm && fn && fn->GetFullName() && !std::string{fn->GetFullName()}.contains("<")) {
-                        SelectedItem::getInstance().setMapQuest(fn->GetFullName(), questForm->GetFormID());
-                    } else if (questForm && markers[markerIdx].customMarker && strlen(markers[markerIdx].customMarker) > 0) {
-                        SelectedItem::getInstance().setMapQuest(markers[markerIdx].customMarker, questForm->GetFormID());
+                RE::TESForm* qf = markers[markerIdx].form;
+                if (qf) {
+                    if (fn && fn->GetFullName() && !std::string{fn->GetFullName()}.contains("<")) {
+                        SelectedItem::getInstance().setMapQuest(fn->GetFullName(), qf->GetFormID());
+                    } else if (cm && strlen(cm) > 0) {
+                        SelectedItem::getInstance().setMapQuest(cm, qf->GetFormID());
                     }
                 }
             }
