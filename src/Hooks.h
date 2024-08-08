@@ -5,7 +5,8 @@ namespace wmh {
         private:
             static constexpr int ADDR_LOADMOVIE_SE = 80302;
             static constexpr int ADDR_LOADMOVIE_AE = 82325;
-            static constexpr int OFFSET_LOADMOVIE_AESE = 0x1DD;
+            static constexpr int OFFSET_LOADMOVIE_AE = 0x1DD;
+            static constexpr int OFFSET_LOADMOVIE_SE = 0x1D9;
             static constexpr int OFFSET_LOADMOVIE_VR = 0x1D9;
             static constexpr SKSE::stl::nttp::string PATTERN_CHECK_LOADMOVIE = "FF 15";
 
