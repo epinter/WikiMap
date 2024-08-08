@@ -3,8 +3,10 @@
 namespace wmh {
     class Hooks {
         private:
+            //RE::Offset::BSScaleformManager::LoadMovie
             static constexpr int ADDR_LOADMOVIE_SE = 80302;
             static constexpr int ADDR_LOADMOVIE_AE = 82325;
+            static constexpr int ADDR_LOADMOVIE_VR = 82325;
             static constexpr int OFFSET_LOADMOVIE_AE = 0x1DD;
             static constexpr int OFFSET_LOADMOVIE_SE = 0x1D9;
             static constexpr int OFFSET_LOADMOVIE_VR = 0x1D9;

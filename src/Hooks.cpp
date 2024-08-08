@@ -26,7 +26,7 @@ namespace wmh {
     }
 
     void Hooks::installMovieHook() {
-        REL::RelocationID hookFuncAddr = REL::RelocationID(ADDR_LOADMOVIE_SE, ADDR_LOADMOVIE_AE);
+        REL::RelocationID hookFuncAddr = REL::RelocationID(ADDR_LOADMOVIE_SE, ADDR_LOADMOVIE_AE, ADDR_LOADMOVIE_VR);
         int hookFuncOffset = REL::Relocate(OFFSET_LOADMOVIE_SE, OFFSET_LOADMOVIE_AE, OFFSET_LOADMOVIE_VR);
         std::uintptr_t hook = hookFuncAddr.address() + hookFuncOffset;
         if (REL::make_pattern<PATTERN_CHECK_LOADMOVIE>().match(hook)) {
