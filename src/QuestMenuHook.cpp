@@ -120,12 +120,20 @@ namespace wmh {
         if (third.IsObject() && third.GetMember("label", &labelThird) && third.GetMember("_keyCodes", &control) &&
             labelThird.GetString() == ""sv) {
             third.SetMember("_visible", false);
+
             int k = 0;
-            if (Config::get().getModCode() > 0) {
-                control.SetArraySize(2);
-                control.SetElement(k++, Config::get().getModCode());
+            int buttonCode = 0;
+            if (RE::BSInputDeviceManager::GetSingleton()->IsGamepadEnabled()) {
+                buttonCode = Config::get().getGamepadButton();
+            } else {
+                buttonCode = Config::get().getKeyCode();
+                if (Config::get().getModCode() > 0) {
+                    control.SetArraySize(2);
+                    control.SetElement(k++, Config::get().getModCode());
+                }
             }
-            control.SetElement(k, Config::get().getKeyCode());
+            control.SetElement(k, buttonCode);
+
             third.SetMember("label", "$Wiki");
             buttonPanel.Invoke("updateButtons", &updateButtonArg);
         }

@@ -154,11 +154,17 @@ namespace wmh {
                             originalCode = origCode.GetUInt();
                         }
                         int k = 0;
-                        if (Config::get().getModCode() > 0) {
-                            control.SetArraySize(2);
-                            control.SetElement(k++, Config::get().getModCode());
+                        int buttonCode = 0;
+                        if (RE::BSInputDeviceManager::GetSingleton()->IsGamepadEnabled()) {
+                            buttonCode = Config::get().getGamepadButton();
+                        } else {
+                            buttonCode = Config::get().getKeyCode();
+                            if (Config::get().getModCode() > 0) {
+                                control.SetArraySize(2);
+                                control.SetElement(k++, Config::get().getModCode());
+                            }
                         }
-                        control.SetElement(k, Config::get().getKeyCode());
+                        control.SetElement(k, buttonCode);
                         if (btnVis.IsBool() && !btnVis.GetBool()) {
                             btn.SetMember("_visible", true);
                         }

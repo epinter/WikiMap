@@ -19,12 +19,14 @@ namespace wmh {
             logger::debug("setting inputhandler key-codes: modKey:'{}'; key:'{}';", Config::get().getModCode(), Config::get().getKeyCode());
             inputListener.setKey(Config::get().getKeyCode());
             inputListener.setModifier(Config::get().getModCode());
+            inputListener.setGameButton(Config::get().getGamepadButton());
         });
     }
 
     void GameEventHandler::onInputLoaded() {
         logger::debug("configuring input handler: modKey:'{}'; key:'{}';", Config::get().getModCode(), Config::get().getKeyCode());
-        inputListener.setHandler(urlProvider.inputHandler(), Config::get().getModCode(), Config::get().getKeyCode());
+        inputListener.setHandler(urlProvider.inputHandler(), Config::get().getModCode(), Config::get().getKeyCode(),
+                                 Config::get().getGamepadButton());
 
         Hooks::installMovieHook();
     }

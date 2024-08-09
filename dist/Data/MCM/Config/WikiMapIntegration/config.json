@@ -33,7 +33,7 @@
 			},
 			"help": "$KeyCodeHelp"
 		},
-				{
+		{
 			"id": "iModifierKeyCode:General",
 			"text": "$Modifier",
 			"type": "keymap",
@@ -42,6 +42,16 @@
 				"sourceType": "ModSettingInt"
 			},
 			"help": "$ModifierHelp"
+		},
+		{
+			"id": "iGamepadBind:General",
+			"text": "$GamepadBind",
+			"type": "keymap",
+			"ignoreConflicts": true,
+			"valueOptions": {
+				"sourceType": "ModSettingInt"
+			},
+			"help": "$KeyCodeHelp"
 		}
 	]
 }

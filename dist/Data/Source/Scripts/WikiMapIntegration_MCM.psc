@@ -17,8 +17,15 @@ Event OnSettingChange(string id)
     if id == "iKeyCode:General"
         int k = GetModSettingInt("iKeyCode:General")
         ;;L=38, J=36, E=18, F=33, M=50, ESC=1
-        if k == 38 || k == 36 || k == 18 || k == 33 || k == 1 || k == 50
+        if k == 38 || k == 36 || k == 18 || k == 33 || k == 1 || k == 50 || k > 265
             SetModSettingInt("iKeyCode:General", 53)
+        endIf
+        self.RefreshMenu()
+    endIf
+    if id == "iGamepadBind:General"
+        int k = GetModSettingInt("iGamepadBind:General")
+        if k < 266
+            SetModSettingInt("iGamepadBind:General", -1)
         endIf
         self.RefreshMenu()
     endIf

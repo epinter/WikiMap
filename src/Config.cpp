@@ -26,6 +26,7 @@ namespace wmh {
             enableSteam = ini.GetBoolValue(INI_SECTION_USER, INI_OPTENABLESTEAM, enableSteam);
             useSteamModal = ini.GetBoolValue(INI_SECTION_USER, INI_OPTUSESTEAMMODAL, useSteamModal);
             keyCode = ini.GetLongValue(INI_SECTION_USER, INI_OPTKEYCODE, keyCode);
+            gamepadButton = ini.GetLongValue(INI_SECTION_USER, INI_OPTGAMEBUTTON, gamepadButton);
             modCode = ini.GetLongValue(INI_SECTION_USER, INI_OPTMODCODE, modCode);
             updateBottomBar = ini.GetBoolValue(INI_SECTION_GENERAL, INI_OPTBOTTOMBAR, updateBottomBar);
 
@@ -56,6 +57,10 @@ namespace wmh {
         }
         if (!ini.KeyExists(INI_SECTION_USER, INI_OPTKEYCODE)) {
             ini.SetLongValue(INI_SECTION_USER, INI_OPTKEYCODE, keyCode, INI_COMMENT_OPTKEYCODE, false);
+            save = true;
+        }
+        if (!ini.KeyExists(INI_SECTION_USER, INI_OPTGAMEBUTTON)) {
+            ini.SetLongValue(INI_SECTION_USER, INI_OPTGAMEBUTTON, gamepadButton, INI_COMMENT_OPTGAMEBUTTON, false);
             save = true;
         }
         if (!ini.KeyExists(INI_SECTION_USER, INI_OPTMODCODE)) {
@@ -112,6 +117,7 @@ namespace wmh {
             enableSteam = ini.GetBoolValue(INI_SECTION_GENERAL, std::string("b").append(INI_OPTENABLESTEAM).c_str(), enableSteam);
             useSteamModal = ini.GetBoolValue(INI_SECTION_GENERAL, std::string("b").append(INI_OPTUSESTEAMMODAL).c_str(), useSteamModal);
             keyCode = ini.GetLongValue(INI_SECTION_GENERAL, std::string("i").append(INI_OPTKEYCODE).c_str(), keyCode);
+            gamepadButton = ini.GetLongValue(INI_SECTION_GENERAL, std::string("i").append(INI_OPTGAMEBUTTON).c_str(), gamepadButton);
             modCode = ini.GetLongValue(INI_SECTION_GENERAL, std::string("i").append(INI_OPTMODCODE).c_str(), modCode);
         }
 
@@ -164,6 +170,14 @@ namespace wmh {
 
     void Config::setKeyCode(int newCode) {
         keyCode = newCode;
+    }
+
+    int Config::getGamepadButton() {
+        return gamepadButton;
+    }
+
+    void Config::setGamepadButton(int newButton) {
+        gamepadButton = newButton;
     }
 
     int Config::getModCode() {

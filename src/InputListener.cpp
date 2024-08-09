@@ -1,7 +1,7 @@
 #include "InputListener.h"
 
 namespace wmh {
-    void InputListener::setHandler(std::function<void(void)> function, int newModifier, int newKey) {
+    void InputListener::setHandler(std::function<void(void)> function, int newModifier, int newKey, int newButton) {
         if (handlerSet) {
             logger::warn("InputListener already configured!");
             return;
@@ -9,6 +9,7 @@ namespace wmh {
         keyPressEventFunc = function;
         setModifier(newModifier);
         setKey(newKey);
+        setGameButton(newButton);
         RE::BSInputDeviceManager::GetSingleton()->AddEventSink(this);
         handlerSet = true;
     }
@@ -29,6 +30,10 @@ namespace wmh {
         key = newKey < 0 ? 0 : newKey;
     }
 
+    void InputListener::setGameButton(int newButton) {
+        gameButton = newButton < 0 ? 0 : newButton;
+    }
+
     RE::BSEventNotifyControl InputListener::ProcessEvent(RE::InputEvent* const* evtPtr, RE::BSTEventSource<RE::InputEvent*>*) {
         auto ui = RE::UI::GetSingleton();
 
@@ -45,21 +50,22 @@ namespace wmh {
         if (evt->GetEventType() == RE::INPUT_EVENT_TYPE::kButton) {
             const RE::ButtonEvent* bEvent = evt->AsButtonEvent();
             int code = bEvent->GetIDCode();
+            int gamepadCode = SKSE::InputMap::GamepadMaskToKeycode(code);
 
-            if (RE::BSInputDeviceManager::GetSingleton()->IsGamepadEnabled()) {
-                code = SKSE::InputMap::GamepadMaskToKeycode(code);
-            } else {
-                if (modifier > 0 && code == modifier) {
-                    modifierHeld = bEvent->IsHeld();
-                }
+            bool gamepadEnabled = RE::BSInputDeviceManager::GetSingleton()->IsGamepadEnabled();
+
+            if (!gamepadEnabled && modifier > 0 && code == modifier) {
+                modifierHeld = bEvent->IsHeld();
             }
 
-            if (bEvent->IsUp() && code == key &&
-                ((modifier > 0 && modifierHeld) ||
-                 (modifier <= 0 && !((GetAsyncKeyState(VK_MENU) & 0x8000) || (GetAsyncKeyState(VK_SHIFT) & 0x8000) ||
-                                     (GetAsyncKeyState(VK_CONTROL) & 0x8000))))) {
-                modifierHeld = false;
-                keyPressEventFunc();
+            if (bEvent->IsUp()) {
+                if ((gamepadEnabled && gamepadCode == gameButton) || (code == key &&
+                           ((modifier > 0 && modifierHeld) ||
+                            (modifier <= 0 && !((GetAsyncKeyState(VK_MENU) & 0x8000) || (GetAsyncKeyState(VK_SHIFT) & 0x8000) ||
+                                                (GetAsyncKeyState(VK_CONTROL) & 0x8000)))))) {
+                    modifierHeld = false;
+                    keyPressEventFunc();
+                }
             }
         }
 

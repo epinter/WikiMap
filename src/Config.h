@@ -20,6 +20,7 @@ namespace wmh {
             std::multimap<std::string, std::string> worldUrl{};
             std::string urlQuest = "https://en.uesp.net/w/index.php?title=Special:Search&search=Skyrim:%Q";
             int keyCode = 53;
+            int gamepadButton = 275;
             int modCode = 0;
             std::function<void(void)> configLoadFunc = []() {};
 
@@ -47,6 +48,9 @@ namespace wmh {
             [[nodiscard]] int getKeyCode();
             void setKeyCode(int newCode);
 
+            [[nodiscard]] int getGamepadButton();
+            void setGamepadButton(int newButton);
+
             [[nodiscard]] int getModCode();
             void setModCode(int newMod);
 
@@ -71,6 +75,7 @@ namespace constants {
     static constexpr const char* INI_OPTQUESTURL = "UrlQuest";
     static constexpr const char* INI_OPTPREFIX_WORLD = "World_";
     static constexpr const char* INI_OPTKEYCODE = "KeyCode";
+    static constexpr const char* INI_OPTGAMEBUTTON = "GamepadBind";
     static constexpr const char* INI_OPTMODCODE = "ModifierKeyCode";
     static constexpr const char* INI_OPTBOTTOMBAR = "UpdateBottomBar";
     static constexpr const char* INI_DEF_URL_TAMRIEL = "https://gamemap.uesp.net/sr?world=skyrim&zoom=17&x=%X&y=%Y";
@@ -85,6 +90,13 @@ namespace constants {
         ";; Comma = 51\n"
         ";; https://learn.microsoft.com/en-us/previous-versions/windows/desktop/bb321074(v=vs.85)\n"
         ";; This option is overwritten by MCM settings, configure in-game if you have MCM Helper installed";
+    static constexpr const char* INI_COMMENT_OPTGAMEBUTTON =
+        ";; 270 = START\n"
+        ";; 271 = BACK\n"
+        ";; 272 = LEFT_THUMB\n"
+        ";; 273 = RIGHT_THUMB\n"
+        ";; 274 = LEFT_SHOULDER\n"
+        ";; 275 = RIGHT_SHOULDER";
     static constexpr const char* INI_COMMENT_OPTMODCODE =
         ";; Modifier key (CTRL,ALT,SHIFT)\n"
         ";; Set to 0 if you don't want to use a modifier key\n"
