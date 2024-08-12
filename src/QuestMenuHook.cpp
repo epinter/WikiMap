@@ -7,14 +7,12 @@ namespace wmh {
         SelectedItem::getInstance().reset();
 
         RE::GFxValue journalMenu{};
-        movieView->GetVariable(&journalMenu, "_global.Quest_Journal.prototype");
-        if (!journalMenu.IsObject()) {
+        if (!(movieView->GetVariable(&journalMenu, "_global.Quest_Journal.prototype") && journalMenu.IsObject())) {
             return;
         }
 
         RE::GFxValue onTabClickOrig{};
-        journalMenu.GetMember("onTabClick", &onTabClickOrig);
-        if (onTabClickOrig.IsObject()) {
+        if (journalMenu.GetMember("onTabClick", &onTabClickOrig) && onTabClickOrig.IsObject()) {
             RE::GFxValue onTabClickNew{};
             RE::GPtr<QuestOnTabClick> funcOnTabClick = RE::make_gptr<QuestMenuHook::QuestOnTabClick>(onTabClickOrig);
             movieView->CreateFunction(&onTabClickNew, funcOnTabClick.get());
@@ -26,15 +24,13 @@ namespace wmh {
         SelectedItem::getInstance().reset();
 
         RE::GFxValue questsMenu{};
-        movieView->GetVariable(&questsMenu, "_global.QuestsPage.prototype");
-        if (!questsMenu.IsObject()) {
+        if (!(movieView->GetVariable(&questsMenu, "_global.QuestsPage.prototype") && questsMenu.IsObject())) {
             return;
         }
 
         //on mouse over quest
         RE::GFxValue onQuestHighlightOrig{};
-        questsMenu.GetMember("onTitleListMouseSelectionChange", &onQuestHighlightOrig);
-        if (onQuestHighlightOrig.IsObject()) {
+        if (questsMenu.GetMember("onTitleListMouseSelectionChange", &onQuestHighlightOrig) && onQuestHighlightOrig.IsObject()) {
             RE::GFxValue onQuestHighlightNew{};
             RE::GPtr<QuestOnSelectedId> funcOnQuestHighlight = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onQuestHighlightOrig);
             movieView->CreateFunction(&onQuestHighlightNew, funcOnQuestHighlight.get());
@@ -43,8 +39,7 @@ namespace wmh {
 
         //on keyboard
         RE::GFxValue onTitleMoveDownOrig{};
-        questsMenu.GetMember("onTitleListMoveDown", &onTitleMoveDownOrig);
-        if (onTitleMoveDownOrig.IsObject()) {
+        if (questsMenu.GetMember("onTitleListMoveDown", &onTitleMoveDownOrig) && onTitleMoveDownOrig.IsObject()) {
             RE::GFxValue onTitleMoveDownNew{};
             RE::GPtr<QuestOnSelectedId> funcOnTitleMoveDownNew = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onTitleMoveDownOrig);
             movieView->CreateFunction(&onTitleMoveDownNew, funcOnTitleMoveDownNew.get());
@@ -53,8 +48,7 @@ namespace wmh {
 
         //on keyboard
         RE::GFxValue onTitleMoveUpOrig{};
-        questsMenu.GetMember("onTitleListMoveUp", &onTitleMoveUpOrig);
-        if (onTitleMoveUpOrig.IsObject()) {
+        if (questsMenu.GetMember("onTitleListMoveUp", &onTitleMoveUpOrig) && onTitleMoveUpOrig.IsObject()) {
             RE::GFxValue onTitleMoveUpNew{};
             RE::GPtr<QuestOnSelectedId> funcOnTitleMoveUpNew = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onTitleMoveUpOrig);
             movieView->CreateFunction(&onTitleMoveUpNew, funcOnTitleMoveUpNew.get());
@@ -64,8 +58,7 @@ namespace wmh {
         if (Config::get().isUpdateBottomBar()) {
             //set wiki button during tab creation
             RE::GFxValue startPageOrig{};
-            questsMenu.GetMember("startPage", &startPageOrig);
-            if (startPageOrig.IsObject()) {
+            if (questsMenu.GetMember("startPage", &startPageOrig) && startPageOrig.IsObject()) {
                 RE::GFxValue startPageNew{};
                 RE::GPtr<QuestStartPage> funcOnStartPage = RE::make_gptr<QuestMenuHook::QuestStartPage>(startPageOrig);
                 movieView->CreateFunction(&startPageNew, funcOnStartPage.get());
@@ -90,23 +83,25 @@ namespace wmh {
         }
 
         RE::GFxValue bottomBar{};
-        params.thisPtr->GetMember("_bottomBar", &bottomBar);
-        if (!bottomBar.IsObject()) {
+        if (!(params.thisPtr->GetMember("_bottomBar", &bottomBar) && bottomBar.IsObject())) {
             logger::error("bottomBar NOT found");
             return;
         }
 
         RE::GFxValue buttonPanel{};
-        bottomBar.GetMember("buttonPanel", &buttonPanel);
-        if (!buttonPanel.IsDisplayObject()) {
+        if (!(bottomBar.GetMember("buttonPanel", &buttonPanel) && buttonPanel.IsDisplayObject())) {
             logger::error("buttonPanel NOT found");
             return;
         }
 
         RE::GFxValue buttons{};
-        buttonPanel.GetMember("buttons", &buttons);
-        if (!buttons.IsArray()) {
+        if (!(buttonPanel.GetMember("buttons", &buttons) && buttons.IsArray())) {
             logger::error("buttons NOT found");
+            return;
+        }
+
+        if (!buttonPanel.HasMember("updateButtons")) {
+            logger::error("updateButtons NOT found");
             return;
         }
 
@@ -115,7 +110,11 @@ namespace wmh {
         updateButtonArg.SetBoolean(true);
         RE::GFxValue third{};
         RE::GFxValue labelThird{};
-        buttons.GetElement(2, &third);
+        if (!buttons.GetElement(2, &third)) {
+            logger::error("third button NOT found");
+            return;
+        }
+
         RE::GFxValue control{};
         if (third.IsObject() && third.GetMember("label", &labelThird) && third.GetMember("_keyCodes", &control) &&
             labelThird.GetString() == ""sv) {
@@ -164,29 +163,25 @@ namespace wmh {
         }
 
         RE::GFxValue titleList{};
-        params.thisPtr->GetMember("TitleList", &titleList);
-        if (!titleList.IsObject()) {
+        if (!(params.thisPtr->GetMember("TitleList", &titleList) && titleList.IsObject())) {
             logger::error("titleList not found");
             return;
         }
 
         RE::GFxValue selectedEntry{};
-        titleList.GetMember("selectedEntry", &selectedEntry);
-        if (!selectedEntry.IsObject()) {
+        if (!(titleList.GetMember("selectedEntry", &selectedEntry) && selectedEntry.IsObject())) {
             logger::error("selectedEntry not found");
             return;
         }
 
         RE::GFxValue questName{};
-        selectedEntry.GetMember("text", &questName);
-        if (!questName.IsString()) {
-            logger::error("formId not found");
+        if (!(selectedEntry.GetMember("text", &questName) && questName.IsString())) {
+            logger::error("questName not found");
             return;
         }
 
         RE::GFxValue formId{};
-        selectedEntry.GetMember("formID", &formId);
-        if (!formId.IsObject() && !formId.IsNumber()) {
+        if (!(selectedEntry.GetMember("formID", &formId) && formId.IsNumber())) {
             logger::error("formId not found");
             return;
         }
@@ -204,22 +199,19 @@ namespace wmh {
         }
 
         RE::GFxValue bottomBar{};
-        params.thisPtr->GetMember("_bottomBar", &bottomBar);
-        if (!bottomBar.IsObject()) {
+        if (!(params.thisPtr->GetMember("_bottomBar", &bottomBar) && bottomBar.IsObject())) {
             logger::error("bottomBar NOT found");
             return;
         }
 
         RE::GFxValue buttonPanel{};
-        bottomBar.GetMember("buttonPanel", &buttonPanel);
-        if (!buttonPanel.IsDisplayObject()) {
+        if (!(bottomBar.GetMember("buttonPanel", &buttonPanel) && buttonPanel.IsDisplayObject())) {
             logger::error("buttonPanel NOT found");
             return;
         }
 
         RE::GFxValue buttons{};
-        buttonPanel.GetMember("buttons", &buttons);
-        if (!buttons.IsArray()) {
+        if (!(buttonPanel.GetMember("buttons", &buttons) && buttons.IsArray())) {
             logger::error("buttons NOT found");
             return;
         }
@@ -227,8 +219,7 @@ namespace wmh {
         for (uint32_t i = 0; i < buttons.GetArraySize(); i++) {
             RE::GFxValue btn{};
             RE::GFxValue label{};
-            buttons.GetElement(i, &btn);
-            if (btn.IsObject() && btn.GetMember("label", &label)) {
+            if (buttons.GetElement(i, &btn) && btn.IsObject() && btn.GetMember("label", &label)) {
                 if (label.GetString() == "$Toggle Active"sv || label.GetString() == "$Show on Map"sv) {
                     btn.SetMember("_visible", true);
                 } else if (label.GetString() == "$Wiki"sv) {

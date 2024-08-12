@@ -7,20 +7,17 @@ namespace wmh {
         setViewScaleMode(movieView, scaleMode);
 
         RE::GFxValue mapMenu{};
-        movieView->GetVariable(&mapMenu, "_global.Map.MapMenu.prototype");
-        if (mapMenu.IsObject()) {
+        if (movieView->GetVariable(&mapMenu, "_global.Map.MapMenu.prototype") && mapMenu.IsObject()) {
             MapMenuHook::installMapMenuHook(movieView);
         }
 
         RE::GFxValue questsMenu{};
-        movieView->GetVariable(&questsMenu, "_global.QuestsPage.prototype");
-        if (questsMenu.IsObject()) {
+        if (movieView->GetVariable(&questsMenu, "_global.QuestsPage.prototype") && questsMenu.IsObject()) {
             QuestMenuHook::installQuestMenuHook(movieView);
         }
 
         RE::GFxValue journalMenu{};
-        movieView->GetVariable(&journalMenu, "_global.Quest_Journal.prototype");
-        if (journalMenu.IsObject()) {
+        if (movieView->GetVariable(&journalMenu, "_global.Quest_Journal.prototype") && journalMenu.IsObject()) {
             QuestMenuHook::installJournalMenuHook(movieView);
         }
     }
