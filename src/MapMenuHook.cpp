@@ -89,33 +89,34 @@ namespace wmh {
         }
 
         RE::GFxValue bottomBar{};
-        params.thisPtr->GetMember("_bottomBar", &bottomBar);
-        if (!bottomBar.IsObject()) {
+        RE::GFxValue buttonPanel{};
+        RE::GFxValue buttons{};
+        RE::GFxValue locationFinder{};
+
+        if (!(params.thisPtr->GetMember("_bottomBar", &bottomBar) && bottomBar.IsObject())) {
             logger::error("bottomBar NOT found");
             return;
         }
 
-        RE::GFxValue buttonPanel{};
-        bottomBar.GetMember("buttonPanel", &buttonPanel);
-        if (!buttonPanel.IsDisplayObject()) {
+        if (!(bottomBar.GetMember("buttonPanel", &buttonPanel) && buttonPanel.IsDisplayObject())) {
             logger::error("buttonPanel NOT found");
             return;
         }
 
-        RE::GFxValue buttons{};
-        buttonPanel.GetMember("buttons", &buttons);
-        if (!buttons.IsArray()) {
+        if (!(buttonPanel.GetMember("buttons", &buttons) && buttons.IsArray())) {
             logger::error("buttons NOT found");
             return;
         }
 
+        if (!buttonPanel.HasMember("updateButtons")) {
+            logger::error("updateButtons NOT found");
+            return;
+        }
+
         bool locationFinderShown = false;
-        RE::GFxValue locationFinder{};
-        params.thisPtr->GetMember("_locationFinder", &locationFinder);
-        if (locationFinder.IsObject()) {
+        if (params.thisPtr->GetMember("_locationFinder", &locationFinder) && locationFinder.IsObject()) {
             RE::GFxValue finderShown{};
-            locationFinder.GetMember("_bShown", &finderShown);
-            if (!finderShown.IsBool()) {
+            if (!(locationFinder.GetMember("_bShown", &finderShown) && finderShown.IsBool())) {
                 logger::error("locationFinder NOT found");
                 return;
             }
@@ -124,8 +125,7 @@ namespace wmh {
 
         for (uint32_t i = 0; i < buttons.GetArraySize(); i++) {
             RE::GFxValue btn{};
-            buttons.GetElement(i, &btn);
-            if (btn.IsDisplayObject()) {
+            if (buttons.GetElement(i, &btn) && btn.IsDisplayObject()) {
                 RE::GFxValue label{};
                 if (!btn.GetMember("label", &label)) {
                     continue;
@@ -142,7 +142,9 @@ namespace wmh {
                         btn.SetMember("label", originalLabel.c_str());
                     } else {
                         RE::GFxValue btnVis{};
-                        btn.GetMember("_visible", &btnVis);
+                        if (!btn.GetMember("_visible", &btnVis)) {
+                            continue;
+                        }
                         if (!originalSet) {
                             originalSet = true;
                             originalLabel = label.GetString();
@@ -150,8 +152,9 @@ namespace wmh {
                                 origVisible = btnVis.GetBool();
                             }
                             RE::GFxValue origCode{};
-                            control.GetElement(0, &origCode);
-                            originalCode = origCode.GetUInt();
+                            if (control.IsArray() && control.GetArraySize() >= 1 && control.GetElement(0, &origCode)) {
+                                originalCode = origCode.GetUInt();
+                            }
                         }
                         int k = 0;
                         int buttonCode = 0;
