@@ -19,6 +19,11 @@ include(pluginpackage)
 include("${PROJECT_SOURCE_DIR}/local.cmake" OPTIONAL)
 
 ######## dependencies
+find_library(DETOURS_LIBRARY detours REQUIRED)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${DETOURS_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DETOURS_LIBRARY})
+
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED  ON)

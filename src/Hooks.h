@@ -15,6 +15,19 @@ namespace wmh {
             static void setViewScaleModeHook(RE::GFxMovieView* movieView, RE::GFxMovieView::ScaleModeType scaleMode);
             static inline REL::Relocation<decltype(setViewScaleModeHook)> setViewScaleMode;
 
+            static void testDetours1(RE::GFxMovieView* movieView, RE::GFxMovieView::ScaleModeType scaleMode);
+            static void testDetours2(RE::GFxMovieView* movieView, RE::GFxMovieView::ScaleModeType scaleMode);
+            static void testDetours3(RE::GFxMovieView* movieView, RE::GFxMovieView::ScaleModeType scaleMode);
+            static void testDetours4(RE::GFxMovieView* movieView, RE::GFxMovieView::ScaleModeType scaleMode);
+
+            static void logTestDetours(int);
+
+            using OrigTestDetour = decltype(&setViewScaleModeHook);
+            static inline OrigTestDetour origSetViewScaleModeD1;
+            static inline OrigTestDetour origSetViewScaleModeD2;
+            static inline OrigTestDetour origSetViewScaleModeD3;
+            static inline OrigTestDetour origSetViewScaleModeD4;
+
         public:
             static void installMovieHook();
     };

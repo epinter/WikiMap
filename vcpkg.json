@@ -9,11 +9,12 @@
     "plugin": {
       "description": "SKSE plugin",
       "dependencies": [
-        "commonlibsse-ng",
+        "fmt",
         "spdlog",
         "simpleini",
         "boost-url",
-        "boost-algorithm"
+        "boost-algorithm",
+        "detours"
       ]
     }
   },
