@@ -8,6 +8,7 @@ namespace wmh {
 
         RE::GFxValue journalMenu{};
         if (!(movieView->GetVariable(&journalMenu, "_global.Quest_Journal.prototype") && journalMenu.IsObject())) {
+            logger::trace("_global.Quest_Journal.prototype not found");
             return;
         }
 
@@ -25,6 +26,7 @@ namespace wmh {
 
         RE::GFxValue questsMenu{};
         if (!(movieView->GetVariable(&questsMenu, "_global.QuestsPage.prototype") && questsMenu.IsObject())) {
+            logger::trace("_global.QuestsPage.prototype not found");
             return;
         }
 
@@ -35,6 +37,8 @@ namespace wmh {
             RE::GPtr<QuestOnSelectedId> funcOnQuestHighlight = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onQuestHighlightOrig);
             movieView->CreateFunction(&onQuestHighlightNew, funcOnQuestHighlight.get());
             questsMenu.SetMember("onTitleListMouseSelectionChange", onQuestHighlightNew);
+        } else {
+            logger::trace("onTitleListMouseSelectionChange not found");
         }
 
         //on keyboard
@@ -44,6 +48,8 @@ namespace wmh {
             RE::GPtr<QuestOnSelectedId> funcOnTitleMoveDownNew = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onTitleMoveDownOrig);
             movieView->CreateFunction(&onTitleMoveDownNew, funcOnTitleMoveDownNew.get());
             questsMenu.SetMember("onTitleListMoveDown", onTitleMoveDownNew);
+        } else {
+            logger::trace("onTitleListMoveDown not found");
         }
 
         //on keyboard
@@ -53,6 +59,8 @@ namespace wmh {
             RE::GPtr<QuestOnSelectedId> funcOnTitleMoveUpNew = RE::make_gptr<QuestMenuHook::QuestOnSelectedId>(onTitleMoveUpOrig);
             movieView->CreateFunction(&onTitleMoveUpNew, funcOnTitleMoveUpNew.get());
             questsMenu.SetMember("onTitleListMoveUp", onTitleMoveUpNew);
+        } else {
+            logger::trace("onTitleListMoveUp not found");
         }
 
         if (Config::get().isUpdateBottomBar()) {
@@ -116,7 +124,7 @@ namespace wmh {
         }
 
         RE::GFxValue control{};
-        if (third.IsObject() && third.GetMember("label", &labelThird) && third.GetMember("_keyCodes", &control) &&
+        if (third.IsObject() && third.GetMember("label", &labelThird) && third.GetMember("_keyCodes", &control) && labelThird.IsString() &&
             labelThird.GetString() == ""sv) {
             third.SetMember("_visible", false);
 
